@@ -1,0 +1,51 @@
+{
+    "description": "Ubuntu {{ user `image_name`}} AMI",
+    "variables": {
+      "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+      "aws_secret_key": "{{env `AWS_SECRET_ACCESS_KEY`}}",
+      "region": "ap-south-1",
+      "ssh_username": "ubuntu",
+      "instance_type": "t2.micro",
+      "image_name": "consul-server",
+      "build_name": "{{env `BUILD_NAME`}}"
+  },
+  "builders": [
+      {
+        "type": "amazon-ebs",
+        "access_key": "{{user `aws_access_key`}}",
+        "secret_key": "{{user `aws_secret_key` }}",
+        "region": "{{user `region` }}",
+        "instance_type": "{{user `instance_type` }}",
+        "ssh_username": "{{user `ssh_username`}}",
+        "ami_name": "ubuntu-{{user `build_name`}}-{{ isotime | clean_ami_name }}",
+        "associate_public_ip_address": true,
+        "source_ami_filter": {
+            "filters": {
+            "virtualization-type": "hvm",
+            "name": "ubuntu/images/*ubuntu-xenial-16.04-amd64-server-*",
+            "root-device-type": "ebs"
+            },
+            "most_recent": true,
+            "owners": ["099720109477"]
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "shell",
+        "script": "scripts/install_ansible.sh"
+      },
+      {
+        "type": "ansible-local",
+        "playbook_file": "../ansible/site.yml",
+        "role_paths": [
+          "../ansible/roles/consul-server"
+        ]
+      },
+      {
+        "type": "shell",
+        "script": "scripts/cleanup.sh"
+      }
+    ]
+  }
+  
