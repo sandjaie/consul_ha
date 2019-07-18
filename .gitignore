@@ -1,0 +1,8 @@
+#vscode
+.vscode/
+
+#env files
+.env
+.vagrant
+*.log
+Vagrantfile
