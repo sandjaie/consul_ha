@@ -1,0 +1,88 @@
+---
+
+- name: Installing Packages
+  apt:
+    update_cache: yes
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - dnsutils
+    - jq
+    - unzip
+    - curl
+
+- name: Download consul
+  get_url:
+    url: "{{consul_url}}"
+    dest: /tmp/consul.zip
+    checksum: sha256:"{{checksum_url}}"
+
+- name: Install consul agent
+  unarchive:
+    src: /tmp/consul.zip
+    dest: /usr/local/bin/
+
+- name: Change ownership to root
+  file:
+    path: /usr/local/bin/consul
+    owner: root
+    group: root
+    mode: u+x
+
+- name: Install autocomplete for consul
+  command: complete -C /usr/local/bin/consul consul
+
+- name: Create consul user
+  user:
+    name: consul
+    system: yes
+    shell: /bin/false
+    home: /etc/consul.d
+
+- name: create consul data directory
+  file:
+    path: "{{consul_data_dir}}"
+    state: directory
+    owner: consul
+    group: consul
+
+- name : create consul config directory
+  file:
+    path: "{{consul_config_dir}}"
+    state: directory
+    owner: consul
+    group: consul
+
+- name: Copy consul config file
+  template:
+    src: config.json.j2
+    dest: "{{ consul_config_file }}"
+    owner: consul
+    group: consul
+    mode: 0640
+
+- name: copy consul systemd script
+  template:
+    src: consul.service.j2
+    dest: /etc/systemd/system/consul.service
+    owner: root
+    group: root
+    mode: 0644
+  systemd:
+    name: consul
+    enabled: yes
+  notify:
+    - reload systemd
+    - restart consul
+
+  
+    
+  
+
+  
+
+
+
+
+

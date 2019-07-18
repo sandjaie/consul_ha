@@ -1,0 +1,10 @@
+{
+"bind_addr":"{{ ansible_default_ipv4.address }}",
+"server": "{{ server_status }}",
+"bootstrap_expect" : "{{ number_of_servers }}",
+"datacenter": "{{ datacenter_name }}",
+"data_dir": "{{ consul_data_dir }}",
+"log_level": "INFO",
+"log_file": "{{ consul_log_file }}",
+"client_addr": "{{ client_addr_ip }}"
+}
