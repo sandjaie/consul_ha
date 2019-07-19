@@ -6,9 +6,9 @@
       "region": "ap-south-1",
       "ssh_username": "ubuntu",
       "instance_type": "t2.micro",
-      "image_name": "consul-server",
+      "image_name": "consul",
       "build_name": "{{env `BUILD_NAME`}}",
-      "build_version": "{{env `BUILD_VERSION`}}"
+      "consul_version": "{{env `CONSUL_VERSION`}}"
   },
   "builders": [
       {
@@ -18,7 +18,7 @@
         "region": "{{user `region` }}",
         "instance_type": "{{user `instance_type` }}",
         "ssh_username": "{{user `ssh_username`}}",
-        "ami_name": "{{user `image_name`}}-{{user `build_version`}}-{{ isotime | clean_ami_name }}",
+        "ami_name": "{{user `image_name`}}-{{user `consul_version`}}-ubuntu-{{ isotime | clean_ami_name }}",
         "associate_public_ip_address": true,
         "source_ami_filter": {
             "filters": {
