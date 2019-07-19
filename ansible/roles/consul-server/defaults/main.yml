@@ -2,8 +2,8 @@
 consul_version: 1.5.2
 
 #URLs
-consul_url: "https://releases.hashicorp.com/consul/${consul_version}/consul_${consul_version}_linux_amd64.zip"
-checksum_url: "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_SHA256SUMS"
+consul_url: "https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_linux_amd64.zip"
+checksum_url: https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{consul_version}}_SHA256SUMS
 
 #data and configs path
 consul_data_dir: /opt/consul
@@ -12,7 +12,7 @@ consul_config_file: /etc/consul.d/config.json
 consul_log_file: /var/log/consul
 
 #consul config file
-server_status: true
+server_status: "true"
 datacenter_name: "dc1"
 client_addr_ip: "0.0.0.0"
-number_of_servers: 3
+number_of_servers: "3"

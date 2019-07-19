@@ -1,0 +1,11 @@
+[consul-server]
+172.28.128.5 ansible_ssh_private_key_file=/tmp/server1.key
+172.28.128.6 ansible_ssh_private_key_file=/tmp/server2.key
+172.28.128.7 ansible_ssh_private_key_file=/tmp/server3.key
+
+
+[all:vars]
+ansible_connection=ssh
+ansible_user=vagrant
+ansible_ssh_pass=vagrant
+host_key_checking=false

@@ -1,27 +1,38 @@
 ---
 
-- name: Installing Packages
+- name: Installing base packages
   apt:
     update_cache: yes
     name: "{{ packages }}"
     state: present
   vars:
     packages:
+    - python-apt
     - dnsutils
     - jq
     - unzip
     - curl
 
+- name: Download the checksum value
+  get_url:
+    url: "{{ checksum_url }}"
+    dest: /tmp/consul-{{ consul_version }}_SHA256SUMS
+
+- name: Register the checksum value
+  shell: /bin/cat /tmp/consul-{{ consul_version }}_SHA256SUMS | grep linux_amd64.zip | awk '{ print $1 }'
+  register: consul_checksum_value
+
 - name: Download consul
   get_url:
-    url: "{{consul_url}}"
-    dest: /tmp/consul.zip
-    checksum: sha256:"{{checksum_url}}"
+    url: "{{ consul_url }}"
+    dest: /tmp/consul-{{ consul_version }}.zip
+    checksum: sha256:{{ consul_checksum_value.stdout }}
 
-- name: Install consul agent
+- name: Unzip consul agent and move to /usr/local/bin/
   unarchive:
-    src: /tmp/consul.zip
+    src: /tmp/consul-{{ consul_version }}.zip
     dest: /usr/local/bin/
+    remote_src: yes
 
 - name: Change ownership to root
   file:
@@ -31,7 +42,9 @@
     mode: u+x
 
 - name: Install autocomplete for consul
-  command: complete -C /usr/local/bin/consul consul
+  shell: complete -C /usr/local/bin/consul consul
+  args:
+    executable: /bin/bash
 
 - name: Create consul user
   user:
@@ -62,27 +75,20 @@
     group: consul
     mode: 0640
 
-- name: copy consul systemd script
+- name: Copy systemd service file
   template:
     src: consul.service.j2
     dest: /etc/systemd/system/consul.service
     owner: root
     group: root
     mode: 0644
+
+- name: Restart service
   systemd:
     name: consul
     enabled: yes
-  notify:
-    - reload systemd
-    - restart consul
-
-  
-    
-  
-
-  
-
-
-
-
-
+    daemon_reload: yes
+    state: restarted
+  # notify:
+  #   - "reload systemd"
+  #   - "restart consul"

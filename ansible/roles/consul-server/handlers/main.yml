@@ -2,8 +2,10 @@
 - name: reload systemd
   systemd:
     daemon_reload: yes
+    listen: "reload systemd"
 
 - name: restart consul
   systemd:
     name: consul
     state: restarted
+    listen: "restart consul"
