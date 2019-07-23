@@ -13,13 +13,6 @@ provider "template" {
 
 terraform {
   required_version = "~> 0.12.0"
-
-  backend "s3" {
-    bucket         = "terraform-state"
-    key            = "terraform/${var.region}/terraform.tfstate"
-    region         = "${var.region}"
-    profile        = "default"
-  }
 }
 
 locals {

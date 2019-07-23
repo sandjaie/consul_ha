@@ -65,7 +65,15 @@ resource "aws_security_group" "consul-cluster" {
     description = "The port used to handle gossip in the LAN. Required by all agents."
     from_port   = 8301
     to_port     = 8301
-    protocol    = "-1"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "The port used to handle gossip in the LAN. Required by all agents."
+    from_port   = 8301
+    to_port     = 8301
+    protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -73,10 +81,17 @@ resource "aws_security_group" "consul-cluster" {
     description = "The port used by servers to gossip over the WAN to other servers."
     from_port   = 8302
     to_port     = 8302
-    protocol    = "-1"
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "The port used by servers to gossip over the WAN to other servers."
+    from_port   = 8302
+    to_port     = 8302
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   ingress {
     description = "The port used by all agents to handle RPC from the CLI."
     from_port   = 8400
@@ -97,7 +112,15 @@ resource "aws_security_group" "consul-cluster" {
     description = "The port used to resolve DNS queries."
     from_port   = 8600
     to_port     = 8600
-    protocol    = "-1"
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0", "::/0"]
+  }
+
+    ingress {
+    description = "The port used to resolve DNS queries."
+    from_port   = 8600
+    to_port     = 8600
+    protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0", "::/0"]
   }
 

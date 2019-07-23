@@ -2,24 +2,12 @@
 ## AMI data ####
 ################
 data "aws_ami" "consul_ami" {
-  executable_users = ["self"]
   most_recent      = true
-  #name_regex       = "^consul\\d{3}"
-  owners           = ["self"]
+  owners           = ["${var.account_number}"]
 
   filter {
     name   = "name"
     values = ["consul-*"]
-  }
-
-  filter {
-    name   = "root-device-type"
-    values = ["ebs"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
   }
 }
 
@@ -45,7 +33,7 @@ resource "aws_iam_instance_profile" "consul_instance_profile" {
 #####################
 resource "aws_launch_template" "consul_launch_template" {
   name_prefix = "consul-"
-  image_id  = "${data.aws_ami.consul_ami}"
+  image_id  = "${data.aws_ami.consul_ami.id}"
   instance_type = "t2.micro"
   key_name = "${var.consul_key}"
   instance_initiated_shutdown_behavior = "terminate"
