@@ -31,10 +31,7 @@ resource "aws_security_group" "consul-cluster-vpc" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  tags {
-    Name    = "Consul Cluster Internal VPC"
-    Project = "consul-cluster"
-  }
+  tags = "${merge(local.consul_common_tags, map("Name", "consul-sg-1"))}"
 }
 
 resource "aws_security_group" "consul-cluster" {
@@ -104,8 +101,5 @@ resource "aws_security_group" "consul-cluster" {
     cidr_blocks = ["0.0.0.0/0", "::/0"]
   }
 
-  tags {
-    Name    = "Consul Cluster Public Web"
-    Project = "consul-cluster"
-  }
+  tags = "${merge(local.consul_common_tags, map("Name", "consul-sg-2"))}"
 }

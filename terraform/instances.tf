@@ -58,7 +58,9 @@ resource "aws_launch_template" "consul_launch_template" {
     associate_public_ip_address = true
   }
 
-  iam_instance_profile = "${aws_iam_instance_profile.consul_instance_profile.name}"
+  iam_instance_profile {
+    name = "${aws_iam_instance_profile.consul_instance_profile.name}"
+  }
   user_data = "${base64encode(data.template_file.consul_userdata.rendered)}"
 
   block_device_mappings {
@@ -72,6 +74,7 @@ resource "aws_launch_template" "consul_launch_template" {
   lifecycle {
       create_before_destroy = true
   }
+  tags = "${merge(local.consul_common_tags, map("Name", "consul-lt"))}"
 }
 
 ##########
@@ -79,8 +82,8 @@ resource "aws_launch_template" "consul_launch_template" {
 ##########
 resource "aws_autoscaling_group" "consul" {
   availability_zones    = ["${var.az1}", "${var.az2}", "${var.az3}"]
-  name                  = "consul - ${aws_launch_configuration.consul.name}"
-  launch_configuration  = "${aws_launch_configuration.consul.name}"
+  name                  = "consul-${aws_launch_template.consul_launch_template.name}"
+  launch_configuration  = "${aws_launch_template.consul_launch_template.name}"
   desired_capacity      = 3
   min_size              = 2
   max_size              = 4
@@ -89,20 +92,20 @@ resource "aws_autoscaling_group" "consul" {
 
 
   load_balancers = [
-    "${aws_elb.consul_elb.id}"
+    "${aws_elb.consul-elb.id}"
     ]
 
-  launch_template = {
-  id      = "${aws_launch_template.consul_launch_template.id}"
-  version = "${aws_launch_template.consul_launch_template.latest_version}"
+  launch_template {
+    id      = "${aws_launch_template.consul_launch_template.id}"
+    version = "${aws_launch_template.consul_launch_template.latest_version}"
   }
 
   lifecycle {
-      create_before_destroy = true
+    create_before_destroy = true
   }
   tags = [
     "${local.common_tags}",
-     {
+    {
       key                 = "Name"
       value               = "consul"
       propagate_at_launch = true
@@ -137,17 +140,4 @@ resource "aws_elb" "consul-elb" {
   }
   
   tags = "${merge(local.consul_common_tags, map("Name", "consul-elb"))}"
-}
-
-
-
-locals {
-  git_project = "https://github.com/sandjaie/consul_ha"
-  common_tags = {
-  git_project = "${local.git_project}"
-  managed_by  = "terraform"
-  }
-  group_name  = "devops"
-  app_name    = "consulcluster"
-  consul_common_tags = "${merge(local.common_tags, map("app_name", local.app_name, "app_group", local.group_name))}"
 }

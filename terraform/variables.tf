@@ -2,6 +2,10 @@ variable "consul_key" {
     default = "consul_access"
 }
 
+variable "account_number" {
+    default = "237392829617"
+}
+
 variable "default_vpc" {
     default = "vpc-f6b7f59e"
 }
@@ -11,15 +15,15 @@ variable "region" {
     default = "ap-south-1"
 }
 
-variable "az-1" {
+variable "az1" {
     default = "ap-south-1a"
 }
 
-variable "az-2" {
+variable "az2" {
     default = "ap-south-1b"
 }
 
-variable "az-3" {
+variable "az3" {
     default = "ap-south-1c"
 }
 
