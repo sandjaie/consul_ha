@@ -1,5 +1,5 @@
 variable "consul_key" {
-    default = "consul_access"
+    default = "ec2-terf"
 }
 
 variable "account_number" {
@@ -28,13 +28,25 @@ variable "az3" {
 }
 
 variable "subnet-az1" {
-    default = "subnet-78057410"
+    default = "172.31.16.0/20"
 }
 
 variable "subnet-az2" {
-    default = "subnet-08fe5844"
+    default = "172.31.16.0/20"
 }
 
 variable "subnet-az3" {
+    default = "172.31.16.0/20"
+}
+
+variable "subnet-az1-id" {
+    default = "subnet-78057410"
+}
+
+variable "subnet-az2-id" {
+    default = "subnet-08fe5844"
+}
+
+variable "subnet-az3-id" {
     default = "subnet-1868a163"
 }
