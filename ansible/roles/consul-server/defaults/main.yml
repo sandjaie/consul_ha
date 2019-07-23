@@ -9,7 +9,7 @@ checksum_url: https://releases.hashicorp.com/consul/{{consul_version}}/consul_{{
 consul_data_dir: /opt/consul
 consul_config_dir: /etc/consul.d
 consul_config_file: /etc/consul.d/config.json
-consul_log_file: /var/log/consul
+consul_log_file: /var/log/consul.log
 
 #consul config file
 server_status: "true"

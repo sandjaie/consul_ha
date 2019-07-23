@@ -34,13 +34,6 @@
     dest: /usr/local/bin/
     remote_src: yes
 
-- name: Change ownership to root
-  file:
-    path: /usr/local/bin/consul
-    owner: root
-    group: root
-    mode: u+x
-
 - name: Install autocomplete for consul
   shell: complete -C /usr/local/bin/consul consul
   args:
@@ -59,6 +52,13 @@
     state: directory
     owner: consul
     group: consul
+
+- name: change /usr/local/bin/consul ownership to consul
+  file:
+    path: /usr/local/bin/consul
+    owner: consul
+    group: consul
+    mode: u+x
 
 - name : create consul config directory
   file:
@@ -83,12 +83,12 @@
     group: root
     mode: 0644
 
-- name: Restart service
-  systemd:
-    name: consul
-    enabled: yes
-    daemon_reload: yes
-    state: restarted
+# - name: Restart service
+#   systemd:
+#     name: consul
+#     enabled: yes
+#     daemon_reload: yes
+#     state: restarted
   # notify:
   #   - "reload systemd"
   #   - "restart consul"

@@ -10,6 +10,7 @@ User=consul
 Group=consul
 ExecStart=/usr/local/bin/consul agent -config-dir={{ consul_config_dir }} -config-file={{ consul_config_file }}
 ExecReload=/usr/local/bin/consul reload
+StartLimitIntervalSec=10
 KillMode=process
 Restart=on-failure
 LimitNOFILE=65536
