@@ -21,16 +21,32 @@ data "template_file" "consul_userdata" {
     "datacenter": "dc1",
     "data_dir": "/opt/consul",
     "log_level": "INFO",
-    "log_file": "/var/log/consul",
-    "client_addr": "0.0.0.0"
+    "ui": true,
+    "client_addr": "0.0.0.0",
+    "retry_join": ["provider=aws tag_key=Name tag_value=consul_server"]
     }' | sudo tee /etc/consul.d/config.json
-    sudo service consul restart
+    sudo systemctl start consul
   EOF
 }
 
+
 resource "aws_iam_role" "consul_instance_role" {
   name               = "consul_instance_role"
-  assume_role_policy = "${module.iam-policies.ec2_assumerole_json}"
+  assume_role_policy = <<EOF
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Action": "sts:AssumeRole",
+        "Principal": {
+          "Service": "ec2.amazonaws.com"
+        },
+        "Effect": "Allow",
+        "Sid": "AllowEC2ToAssumeInstanceProfile"
+      }
+    ]
+  }
+  EOF
 }
 
 resource "aws_iam_instance_profile" "consul_instance_profile" {
@@ -53,7 +69,7 @@ resource "aws_launch_template" "consul_launch_template" {
       "${aws_security_group.consul-cluster-vpc.id}",
       "${aws_security_group.consul-cluster.id}",
       "${var.sg_allow_from_office}",
-      "${var.sg_allow_from_office}"
+      "${var.sg_allow_from_home}"
     ]
     associate_public_ip_address = true
   }
@@ -83,9 +99,9 @@ resource "aws_launch_template" "consul_launch_template" {
 resource "aws_autoscaling_group" "consul_asg" {
   availability_zones    = ["${var.az1}", "${var.az2}", "${var.az3}"]
   name                  = "asg-${aws_launch_template.consul_launch_template.name}"
-  desired_capacity      = 3
-  min_size              = 2
-  max_size              = 4
+  desired_capacity      = 0
+  min_size              = 0
+  max_size              = 0
   health_check_type     = "EC2"
   force_delete          = true
   #placement_group       = "${aws_placement_group.consul_placement_group.id}"
@@ -140,9 +156,16 @@ resource "aws_elb" "consul-elb" {
 
   listener {
       instance_port     = 8500
-      instance_protocol = "http"
+      instance_protocol = "tcp"
       lb_port           = 8500
-      lb_protocol       = "http"
+      lb_protocol       = "tcp"
+  }
+
+    listener {
+      instance_port     = 8600
+      instance_protocol = "tcp"
+      lb_port           = 8600
+      lb_protocol       = "tcp"
   }
 
   health_check {
@@ -155,3 +178,16 @@ resource "aws_elb" "consul-elb" {
   
   tags = "${merge(local.consul_common_tags, map("Name", "consul-elb"))}"
 }
+
+############
+##ROUTE 53##
+############
+
+resource "aws_route53_record" "consul_cluster_record" {
+  zone_id = "${var.internal_zone_id}"
+  name    = "consulelb.mydc.internal"
+  type    = "CNAME"
+  ttl     = "5"
+  records = ["${aws_elb.consul-elb.dns_name}"]
+}
+

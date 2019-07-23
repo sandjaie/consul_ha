@@ -106,7 +106,7 @@ resource "aws_security_group" "consul-cluster" {
     from_port   = 8500
     to_port     = 8500
     protocol    = "tcp"
-    cidr_blocks = ["${var.subnet-az1}", "${var.subnet-az2}", "${var.subnet-az3}"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -114,7 +114,8 @@ resource "aws_security_group" "consul-cluster" {
     from_port   = 8600
     to_port     = 8600
     protocol    = "tcp"
-    cidr_blocks = ["${var.subnet-az1}", "${var.subnet-az2}", "${var.subnet-az3}"]
+    #cidr_blocks = ["${var.subnet-az1}", "${var.subnet-az2}", "${var.subnet-az3}"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
@@ -122,7 +123,7 @@ resource "aws_security_group" "consul-cluster" {
     from_port   = 8600
     to_port     = 8600
     protocol    = "udp"
-    cidr_blocks = ["${var.subnet-az1}", "${var.subnet-az2}", "${var.subnet-az3}"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   egress {

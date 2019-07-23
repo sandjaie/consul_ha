@@ -32,11 +32,11 @@ variable "subnet-az1" {
 }
 
 variable "subnet-az2" {
-    default = "172.31.16.0/20"
+    default = "172.31.0.0/20"
 }
 
 variable "subnet-az3" {
-    default = "172.31.16.0/20"
+    default = "172.31.32.0/20"
 }
 
 variable "subnet-az1-id" {
@@ -57,4 +57,13 @@ variable "sg_allow_from_office" {
 
 variable "sg_allow_from_home" {
     default = "sg-0c02701c08501707c"
+}
+
+variable "consul_join_tag_key" {
+  description = "The key of the tag to auto-jon on EC2."
+  default     = "consul_server"
+}
+
+variable "internal_zone_id" {
+    default = "Z1WRU6JEVL85AD"
 }
