@@ -68,16 +68,15 @@ resource "aws_launch_template" "consul_launch_template" {
 ##########
 ## ASG ###
 ##########
-resource "aws_autoscaling_group" "consul" {
+resource "aws_autoscaling_group" "consul_asg" {
   availability_zones    = ["${var.az1}", "${var.az2}", "${var.az3}"]
   name                  = "consul-${aws_launch_template.consul_launch_template.name}"
-  launch_configuration  = "${aws_launch_template.consul_launch_template.name}"
   desired_capacity      = 3
   min_size              = 2
   max_size              = 4
   health_check_type     = "ELB"
   force_delete          = true
-
+  placement_group       = "${aws_placement_group.consul_placement_group.id}"
 
   load_balancers = [
     "${aws_elb.consul-elb.id}"
@@ -91,14 +90,29 @@ resource "aws_autoscaling_group" "consul" {
   lifecycle {
     create_before_destroy = true
   }
-  tags = [
-    "${local.common_tags}",
+  
+  tags =[
     {
       key                 = "Name"
-      value               = "consul"
+      value               = "consul_asg"
       propagate_at_launch = true
+    },
+    {
+      key                 = "app_name"
+      value               = "consulcluster"
+      propagate_at_launch = true
+    },
+    {
+      key                  = "app_group"
+      value                = "devops"
+      propagate_at_launch  = true
     }
   ]
+}
+
+resource "aws_placement_group" "consul_placement_group" {
+  name     = "consul_placement_group"
+  strategy = "cluster"
 }
 
 #########
