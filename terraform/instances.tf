@@ -51,7 +51,9 @@ resource "aws_launch_template" "consul_launch_template" {
   network_interfaces {
     security_groups = [
       "${aws_security_group.consul-cluster-vpc.id}",
-      "${aws_security_group.consul-cluster.id}"
+      "${aws_security_group.consul-cluster.id}",
+      "${var.sg_allow_from_office}",
+      "${var.sg_allow_from_office}"
     ]
     associate_public_ip_address = true
   }
