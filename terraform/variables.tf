@@ -50,3 +50,11 @@ variable "subnet-az2-id" {
 variable "subnet-az3-id" {
     default = "subnet-1868a163"
 }
+
+variable "sg_allow_from_office" {
+    default = "sg-0a7aea4c1c893774a"
+}
+
+variable "sg_allow_from_home" {
+    default = "sg-0c02701c08501707c"
+}
