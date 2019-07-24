@@ -11,6 +11,9 @@ data "aws_ami" "consul_ami" {
   }
 }
 
+############
+# USER DATA#
+############
 data "template_file" "consul_userdata" {
   template = <<-EOF
   #!/bin/bash
@@ -29,7 +32,9 @@ data "template_file" "consul_userdata" {
   EOF
 }
 
-
+#############
+#ROLE POLICY#
+#############
 resource "aws_iam_role" "consul_instance_role" {
   name               = "consul_instance_role"
   assume_role_policy = <<EOF
@@ -52,6 +57,16 @@ resource "aws_iam_role" "consul_instance_role" {
 resource "aws_iam_instance_profile" "consul_instance_profile" {
   name = "consul_instance_profile"
   role = "${aws_iam_role.consul_instance_role.name}"
+}
+
+data "aws_iam_policy" "Ec2FullAccess" {
+  arn = "${var.policy_arn}"
+}
+
+resource "aws_iam_policy_attachment" "consul_role_attachment" {
+  name = "consul_role_attachment"
+  roles = ["${aws_iam_role.consul_instance_role.name}"]
+  policy_arn = "${data.aws_iam_policy.Ec2FullAccess.arn}"  
 }
 
 #####################
@@ -99,9 +114,9 @@ resource "aws_launch_template" "consul_launch_template" {
 resource "aws_autoscaling_group" "consul_asg" {
   availability_zones    = ["${var.az1}", "${var.az2}", "${var.az3}"]
   name                  = "asg-${aws_launch_template.consul_launch_template.name}"
-  desired_capacity      = 0
-  min_size              = 0
-  max_size              = 0
+  desired_capacity      = 3
+  min_size              = 3
+  max_size              = 4
   health_check_type     = "EC2"
   force_delete          = true
   #placement_group       = "${aws_placement_group.consul_placement_group.id}"

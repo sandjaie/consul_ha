@@ -67,3 +67,7 @@ variable "consul_join_tag_key" {
 variable "internal_zone_id" {
     default = "Z1WRU6JEVL85AD"
 }
+
+variable "policy_arn" {
+    default = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
