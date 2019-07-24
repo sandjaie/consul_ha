@@ -117,7 +117,7 @@ resource "aws_autoscaling_group" "consul_asg" {
   desired_capacity      = 3
   min_size              = 3
   max_size              = 4
-  health_check_type     = "EC2"
+  health_check_type     = "ELB"
   force_delete          = true
   #placement_group       = "${aws_placement_group.consul_placement_group.id}"
 
@@ -173,13 +173,6 @@ resource "aws_elb" "consul-elb" {
       instance_port     = 8500
       instance_protocol = "tcp"
       lb_port           = 8500
-      lb_protocol       = "tcp"
-  }
-
-    listener {
-      instance_port     = 8600
-      instance_protocol = "tcp"
-      lb_port           = 8600
       lb_protocol       = "tcp"
   }
 
