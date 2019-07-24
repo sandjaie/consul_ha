@@ -1,4 +1,4 @@
-AWS_ACCESS_KEY_ID=YOUR_KEY_ID
-AWS_SECRET_ACCESS_KEY=YOUR_ACESS_KEY
+AWS_ACCESS_KEY_ID=$(aws ssm get-parameter --name "def_access_id" --query "Parameter.Value" --output text --region ap-south-1)
+AWS_SECRET_ACCESS_KEY=$(aws ssm get-parameter --name "def_secret_key" --query "Parameter.Value" --output text --region ap-south-1)
 BUILD_NAME=consul-server
 CONSUL_VERSION=1.5.2
