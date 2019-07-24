@@ -1,7 +1,8 @@
 include .env
-export $(shell sed 's/=.*//' .env)
+#export $(shell sed 's/=.*//' .env)
+export
 
-image:
+build:
 	cd packer && \
 	packer build ubuntu-consul-template.json && \
 	cd -
