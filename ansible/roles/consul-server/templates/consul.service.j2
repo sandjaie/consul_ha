@@ -8,7 +8,7 @@ ConditionFileNotEmpty={{ consul_config_file }}
 [Service]
 User=consul
 Group=consul
-ExecStart=/usr/local/bin/consul agent -config-dir={{ consul_config_dir }} -config-file={{ consul_config_file }}
+ExecStart=/usr/local/bin/consul agent -server -config-dir={{ consul_config_dir }} -config-file={{ consul_config_file }} -retry-join='provider=aws tag_key=Name tag_value=consul_server'
 ExecReload=/usr/local/bin/consul reload
 StartLimitIntervalSec=10
 KillMode=process
