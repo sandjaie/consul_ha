@@ -30,4 +30,5 @@ Ansible role can be tested on the vagrant machines which can be created using th
   "consul01.local.domain:8301",
   "consul02.local.domain:8301",
   "consul03.local.domain:8301"
+]
 ```
