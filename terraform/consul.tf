@@ -38,7 +38,7 @@ data "template_file" "consul_userdata" {
 resource "aws_iam_role" "consul_instance_role" {
   name               = "consul_instance_role"
   assume_role_policy = <<EOF
-  {
+{
     "Version": "2012-10-17",
     "Statement": [
       {
